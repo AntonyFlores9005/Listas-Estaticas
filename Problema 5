@@ -1,0 +1,309 @@
+#include <iostream>
+#include <windows.h>
+#include <string>
+#include <cstdlib>
+
+// Clase Empleado
+class Empleado {
+    private:
+    //Atributos
+    int ClaveEmpleado;
+    std::string Nombre;
+    std::string Domicilio;
+    float Sueldo;
+    std::string ReportaA;
+    protected:        
+    public:
+
+    //Metodos
+    Empleado(int CE = 0, std::string N = "", std::string Dom = "", float Sld = 0.0, std::string URA = "") {
+        ClaveEmpleado = CE; Nombre = N; Domicilio = Dom; Sueldo = Sld; ReportaA = URA;
+    }
+
+        // Constructor de copia
+    Empleado(const Empleado& otroEmpleado) {
+        ClaveEmpleado = otroEmpleado.ClaveEmpleado;
+        Nombre = otroEmpleado.Nombre;
+        Domicilio = otroEmpleado.Domicilio;
+        Sueldo = otroEmpleado.Sueldo;
+        ReportaA = otroEmpleado.ReportaA;
+    }
+
+    void SetClave(int CE){ClaveEmpleado=CE;}
+    int getClave(){return ClaveEmpleado;}
+    void SetNombre(std::string N){Nombre=N;}
+    std::string getNombre(){return Nombre;}        
+    void SetDomicilio(std::string Dom){Domicilio=Dom;}
+    std::string getDomicilio(){return Domicilio;}
+    void SetSueldo(float Sld){Sueldo=Sld;}
+    float getSueldo(){return Sueldo;}
+    void SetReportaA(std::string URA){ReportaA=URA;}
+    std::string getReportaA(){return ReportaA;}
+
+    //Sobrecarga << >>
+    friend std::ostream& operator<<(std::ostream& o, const Empleado& e) {
+        o << "Clave de empleado: " << e.ClaveEmpleado << std::endl;
+        o << "Nombre: " << e.Nombre << std::endl;
+        o << "Domicilio: " << e.Domicilio << std::endl;
+        o << "Sueldo: " << e.Sueldo << std::endl;
+        o << "Persona a quien reporta: " << e.ReportaA << std::endl;
+        return o;
+    }
+
+    // Sobrecarga del operador de asignación =
+    Empleado& operator=(const Empleado& otroEmpleado) {
+        if (this != &otroEmpleado) { // Evitar autoasignación
+            ClaveEmpleado = otroEmpleado.ClaveEmpleado;
+            Nombre = otroEmpleado.Nombre;
+            Domicilio = otroEmpleado.Domicilio;
+            Sueldo = otroEmpleado.Sueldo;
+            ReportaA = otroEmpleado.ReportaA;
+        }
+        return *this; 
+    }
+
+    friend std::istream& operator>>(std::istream& i, Empleado& e) {
+        std::cout << "Ingrese la clave del empleado: ";
+        i >> e.ClaveEmpleado;
+        std::cout << "Ingrese el nombre del empleado: ";
+        i.ignore();
+        std::getline(i, e.Nombre);
+        std::cout << "Ingrese el domicilio del empleado: ";
+        std::getline(i, e.Domicilio);
+        std::cout << "Ingrese el sueldo del empleado: ";
+        i >> e.Sueldo;
+        std::cout << "Ingrese el jefe del empleado: ";
+        i.ignore();
+        std::getline(i, e.ReportaA);
+        return i;
+    }
+
+        void Imprime(){
+        std::cout << "Clave: " << ClaveEmpleado << std::endl;
+        std::cout << "Nombre: " << Nombre << std::endl;
+        std::cout << "Domicilio: " << Domicilio << std::endl;
+        std::cout << "Sueldo: " << Sueldo << std::endl;
+        std::cout << "Reporta a: " << ReportaA << std::endl;
+    }
+
+    //sobrecarga == !=
+    bool operator==(const Empleado& e) const {
+    return this->ClaveEmpleado == e.ClaveEmpleado; 
+    }
+    
+    bool operator!=(const Empleado& e) const {
+    return !(*this == e); 
+    }
+
+    //Sobrecarga + < >
+    Empleado operator+(const Empleado& otroEmpleado) const {
+        return Empleado(0, "", "", this->Sueldo + otroEmpleado.Sueldo, ""); 
+    }
+
+    bool operator<(const Empleado& otroEmpleado) const {
+        return this->Sueldo < otroEmpleado.Sueldo;
+    }
+
+    bool operator>(const Empleado& otroEmpleado) const {
+        return this->Sueldo > otroEmpleado.Sueldo;
+    }    
+};
+
+#define MAX 100  
+
+// Clase ListaEstatica 
+template <typename T>
+class ListaEstatica {
+private:
+    T Datos[MAX]; 
+    int Tam; 
+
+public:
+    ListaEstatica() : Tam(0) {} 
+
+        int getTam() const { // Método getter para Tam
+        return Tam;
+    }
+
+    int Inserta(T elemento, int posicion) {
+        if (Llena() || posicion < 0 || posicion > Tam) {
+            return 0; // Error: lista llena o posición inválida
+        }
+
+        for (int i = Tam; i > posicion; i--) {
+            Datos[i] = Datos[i - 1]; 
+        }
+        Datos[posicion] = elemento;
+        Tam++;
+        return 1; // Éxito
+    }
+
+    int Agrega(T elemento) {
+        if (Llena()) {
+            return 0; // Error: lista llena
+        }
+        Datos[Tam] = elemento;
+        Tam++;
+        return 1; // Éxito
+    }
+
+    int Busca(T elemento) {
+        for (int i = 0; i < Tam; i++) {
+            if (Datos[i] == elemento) {
+                return i; // Retorna la posición donde se encontró
+            }
+        }
+        return -1; // No se encontró
+    }
+
+    int Elimina(int posicion) {
+        if (Vacia() || posicion < 0 || posicion >= Tam) {
+            return 0; // Error: lista vacía o posición inválida
+        }
+
+        for (int i = posicion; i < Tam - 1; i++) {
+            Datos[i] = Datos[i + 1];
+        }
+        Tam--;
+        return 1; // Éxito
+    }
+
+    int Vacia() {
+        return (Tam == 0); 
+    }
+
+    int Llena() {
+        return (Tam == MAX);
+    }
+
+    int Muestra() {
+        if (Vacia()) {
+            std::cout << "La lista esta vacia." << std::endl;
+            return 0; 
+        }
+
+        for (int i = 0; i < Tam; i++) {
+            std::cout << "Posicion " << i << ": " << std::endl;
+            Datos[i].Imprime(); 
+            std::cout << std::endl;
+        }
+        return 1; 
+    }
+};
+
+int main() {
+    ListaEstatica<Empleado> listaEmpleados; 
+
+    int opcion;
+    do {
+        system("cls");
+        system("Color F0");
+        std::cout << "\n\tMenu:\n";
+        std::cout << "\t1. Agrega\n";
+        std::cout << "\t2. Buscar\n";
+        std::cout << "\t3. Elimina\n";
+        std::cout << "\t4. Inserta\n";
+        std::cout << "\t5. Muestra\n";
+        std::cout << "\t0. Salir\n";
+        std::cout << "\tIngrese su opcion: ";
+        std::cin >> opcion;
+
+        switch (opcion) {
+            case 1: { // Agrega
+                system("cls");
+                if (listaEmpleados.Llena()) {
+                    std::cout << "La lista está llena. No se puede agregar." << std::endl;
+                } else {
+                    Empleado nuevoEmpleado;
+                    std::cin >> nuevoEmpleado;
+                    listaEmpleados.Agrega(nuevoEmpleado);
+                    std::cout << "Empleado agregado correctamente." << std::endl;
+                }
+                system("pause");
+                break;
+            }
+            case 2: { // Buscar
+                system("cls");
+                if (listaEmpleados.Vacia()) {
+                    std::cout << "La lista está vacia." << std::endl;
+                } else {
+                    Empleado empleadoBuscado;
+                    std::cout << "Ingrese los datos del empleado a buscar:" << std::endl;
+                    std::cin >> empleadoBuscado;
+                    int posicion = listaEmpleados.Busca(empleadoBuscado);
+                    if (posicion != -1) {
+                        std::cout << "Empleado encontrado en la posicion " << posicion << std::endl;
+                    } else {
+                        std::cout << "Empleado no encontrado." << std::endl;
+                    }
+                }
+                system("pause");
+                break;
+            }
+            case 3: { // Elimina
+                system("cls");
+                if (listaEmpleados.Vacia()) {
+                    std::cout << "La lista está vacia." << std::endl;
+                } else {
+                    Empleado empleadoEliminar;
+                    std::cout << "Ingrese los datos del empleado a eliminar:" << std::endl;
+                    std::cin >> empleadoEliminar;
+                    int posicion = listaEmpleados.Busca(empleadoEliminar);
+                    if (posicion != -1) {
+                        listaEmpleados.Elimina(posicion);
+                        std::cout << "Empleado eliminado." << std::endl;
+                    } else {
+                        std::cout << "Empleado no encontrado." << std::endl;
+                    }
+                }
+                system("pause");
+                break;
+            }
+            case 4: { // Inserta
+                system("cls");
+                if (listaEmpleados.Llena()) {
+                    std::cout << "La lista está llena. No se puede insertar." << std::endl;
+                } else {
+                    Empleado nuevoEmpleado;
+                    std::cout << "Ingrese los datos del empleado a insertar:" << std::endl;
+                    std::cin >> nuevoEmpleado;
+
+                    int posicion;
+                    std::cout << "Ingrese la posicion donde desea insertar: ";
+                    std::cin >> posicion;
+
+                    if (posicion >= 0 && posicion <= listaEmpleados.getTam()) { 
+                        if (listaEmpleados.Inserta(nuevoEmpleado, posicion)) {
+                            std::cout << "Empleado insertado correctamente." << std::endl;
+                        } else {
+                            std::cout << "Error al insertar." << std::endl; 
+                        }
+                    } else {
+                        std::cout << "Posicion invalida." << std::endl;
+                    }
+                }
+                system("pause");
+                break;
+            }
+            case 5: { // Muestra
+                system("cls");
+                listaEmpleados.Muestra();
+                system("pause");
+                break;
+            }
+            case 0: { // Salir
+                std::cout << "Saliendo..." << std::endl;
+                break;
+            }
+            default: {
+                system("cls");
+                std::cout << "Opcion invalida." << std::endl;
+                system("Color 4F");
+                Sleep(2500);
+            }
+        }
+
+    } while (opcion != 0);
+
+    return 0;
+}
